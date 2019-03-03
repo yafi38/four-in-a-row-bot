@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import board.Board;
+import logic.Logic;
 
 /**
  * bot.BotStarter
@@ -45,8 +46,12 @@ public class BotStarter {
 
          ArrayList<Integer> moves = state.getValidMoves();
 
-         int move = new Random().nextInt(moves.size()-1);
+         int move = new Random().nextInt(moves.size());
          move = moves.get(move);
+
+         if(Logic.isWinning(board, 4, board.getMyId())) {
+             System.err.println("I am winning");
+         }
 
          return move;
      }

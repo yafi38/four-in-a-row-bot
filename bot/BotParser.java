@@ -101,7 +101,9 @@ public class BotParser {
                     break;
                 case "your_botid":
                     int myId = Integer.parseInt(value);
+                    int enemyID = 1 - myId;
                     this.currentState.getBoard().setMyId(myId);
+                    this.currentState.getBoard().setEnemyId(enemyID);
                     break;
                 case "field_width":
                     this.currentState.getBoard().setWidth(Integer.parseInt(value));
@@ -134,7 +136,7 @@ public class BotParser {
                 case "round":
                     this.currentState.setRoundNumber(Integer.parseInt(value));
                     break;
-                case "board":
+                case "field":
                     this.currentState.getBoard().initField();
                     this.currentState.getBoard().parseFromString(value);
                     break;

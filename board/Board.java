@@ -23,22 +23,26 @@ import java.awt.*;
 
 /**
  * Board class
- * 
+ * <p>
  * Board class that contains the board status data and various helper functions.
- * 
+ *
  * @author Jim van Eeden <jim@riddles.io>, Joost de Meij <joost@riddles.io>
  */
 
 public class Board {
-    public final String EMPTY_FIELD = ".";
+    public static final String EMPTY_FIELD = ".";
 
     private int myId;
+    private int enemyId;
+
+
     private int width;
     private int height;
     private String[][] field;
 
     /**
      * Initializes and clears board
+     *
      * @throws Exception exception
      */
     public void initField() throws Exception {
@@ -52,19 +56,20 @@ public class Board {
         clearField();
     }
 
-	/**
-	 * Clear the board
-	 */
-	public void clearField() {
+    /**
+     * Clear the board
+     */
+    public void clearField() {
         for (int i = 0; i < this.height; i++) {
             for (int j = 0; j < this.width; j++) {
                 this.field[i][j] = ".";
             }
         }
-	}
+    }
 
     /**
      * Parse board from comma separated String
+     *
      * @param s input from engine
      */
     public void parseFromString(String s) {
@@ -78,7 +83,7 @@ public class Board {
             this.field[i][j] = value;
 
             j++;
-            if(j == width) {
+            if (j == width) {
                 j = 0;
                 i++;
             }
@@ -88,6 +93,8 @@ public class Board {
     public void setMyId(int id) {
         this.myId = id;
     }
+
+    public int getMyId() { return this.myId; }
 
     public void setWidth(int width) {
         this.width = width;
@@ -103,6 +110,14 @@ public class Board {
 
     public int getHeight() {
         return this.height;
+    }
+
+    public int getEnemyId() {
+        return enemyId;
+    }
+
+    public void setEnemyId(int enemyId) {
+        this.enemyId = enemyId;
     }
 
     public String getFieldAt(Point p) {

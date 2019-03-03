@@ -95,7 +95,7 @@ public class BotState {
         for(int i=0; i<7; i++)
         {
             Point p = new Point(0, i);
-            if(board.getFieldAt(p).equals(board.EMPTY_FIELD))
+            if(board.getFieldAt(p).equals(Board.EMPTY_FIELD))
                 moves.add(i);
         }
         return moves;
