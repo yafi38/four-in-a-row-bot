@@ -27,37 +27,84 @@ import logic.Logic;
 
 /**
  * bot.BotStarter
- * 
+ * <p>
  * Magic happens here. You should edit this file, or more specifically
  * the doMove() method to make your bot do more than random moves.
- * 
+ *
  * @author Jim van Eeden <jim@riddles.io>, Joost de Meij <joost@riddles.io>
  */
 
 public class BotStarter {
 
-     /**
-      * Makes a turn. Edit this method to make your bot smarter.
-      * @return The column where the turn was made.
-      */
-     public int doMove(BotState state) {
-         Board board = state.getBoard();
-         //int move = new Random().nextInt(board.getWidth());
+    /**
+     * Makes a turn. Edit this method to make your bot smarter.
+     *
+     * @return The column where the turn was made.
+     */
+    /*private int currMove;
 
-         ArrayList<Integer> moves = state.getValidMoves();
+    public int calcMove(BotState state, boolean isMe) {
 
-         int move = new Random().nextInt(moves.size());
-         move = moves.get(move);
+        Board board = state.getBoard();
+        currMove = -1;
 
-         if(Logic.isWinning(board, 4, board.getMyId())) {
-             System.err.println("I am winning");
-         }
+        optimizer(board, 0,true);
 
-         return move;
-     }
-     
- 	public static void main(String[] args) {
- 		BotParser parser = new BotParser(new BotStarter());
- 		parser.run();
- 	}
- }
+        if (currMove == -1) {
+            ArrayList<Integer> moves = board.getValidMoves();
+            int index = new Random().nextInt(moves.size());
+            currMove = moves.get(index);
+        }
+
+        return currMove;
+    }
+
+    private int optimizer(Board board, int depth, boolean isMe) {
+        if (depth >= 6) {
+            if (isMe && Logic.isWinning(board, 4, board.getMyId()))
+                return 100;
+            else if (!isMe && Logic.isWinning(board, 4, board.getEnemyId()))
+                return -200;
+            else return -1;
+        }
+
+        int score = 0;
+
+        ArrayList<Integer> moves = board.getValidMoves();
+
+        if (isMe) {
+            for (int move : moves) {
+                Logic.doMove(board, move, board.getMyId());
+                if (Logic.isWinning(board, 4, board.getMyId()))
+                {
+                    currMove = move;
+                    return 1000;
+                }
+                int tempScore = optimizer(board, depth+1, false);
+                if (tempScore > score) {
+                    score = tempScore;
+                    currMove = move;
+                }
+                Logic.undoMove(board, move);
+            }
+            return score;
+        } else {
+            for (int move : moves) {
+                Logic.doMove(board, move, board.getMyId());
+
+                if (Logic.isWinning(board, 4, board.getEnemyId()))
+                    return -2000;
+                int tempScore = optimizer(board, depth+1, true);
+                if (tempScore < score)
+                    score = tempScore;
+                Logic.undoMove(board, move);
+            }
+            return score;
+        }
+
+    }*/
+    public static void main(String[] args) {
+        BotParser parser = new BotParser();
+        parser.run();
+    }
+}

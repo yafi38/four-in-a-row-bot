@@ -20,6 +20,7 @@
 package board;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 /**
  * Board class
@@ -94,7 +95,9 @@ public class Board {
         this.myId = id;
     }
 
-    public int getMyId() { return this.myId; }
+    public int getMyId() {
+        return this.myId;
+    }
 
     public void setWidth(int width) {
         this.width = width;
@@ -126,5 +129,25 @@ public class Board {
 
     public void setFieldAt(Point p, String str) {
         field[p.x][p.y] = str;
+    }
+
+    public ArrayList<Integer> getValidMoves() {
+        ArrayList<Integer> moves = new ArrayList<>();
+
+        for (int i = 0; i < 7; i++) {
+            Point p = new Point(0, i);
+            if (getFieldAt(p).equals(EMPTY_FIELD))
+                moves.add(i);
+        }
+        return moves;
+    }
+
+    public void printBoard() {
+        for(int i=0; i<getHeight(); i++) {
+            for(int j=0; j<getWidth(); j++) {
+                System.err.print(field[i][j] + " ");
+            }
+            System.err.println();
+        }
     }
 }

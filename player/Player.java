@@ -21,7 +21,7 @@ package player;
 
 /**
  * player.Player
- *
+ * <p>
  * Stores all information about a player
  *
  * @author Jim van Eeden - jim@riddles.io

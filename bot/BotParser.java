@@ -25,27 +25,28 @@ import player.Player;
 
 /**
  * bot.BotParser
- * 
+ * <p>
  * Main class that will keep reading output from the engine.
  * Will either update the bot state or get actions.
- * 
+ *
  * @author Jim van Eeden <jim@riddles.io>, Joost de Meij <joost@riddles.io>
  */
 
 public class BotParser {
-    
-	private Scanner scan;
-    private BotStarter bot;
+
+    private Scanner scan;
+    //private BotStarter bot;
 
     private BotState currentState;
+    private BotMover botMover;
 
-    
-    public BotParser(BotStarter bot) {
-		this.scan = new Scanner(System.in);
-		this.bot = bot;
-		this.currentState = new BotState();
-	}
-    
+
+    public BotParser() {
+        this.scan = new Scanner(System.in);
+        this.currentState = new BotState();
+        this.botMover = new BotMover();
+    }
+
     public void run() {
         while (scan.hasNextLine()) {
             String line = scan.nextLine();
@@ -64,7 +65,7 @@ public class BotParser {
                     break;
                 case "action":
                     if (parts[1].equals("move")) { /* move requested */
-                        int column = this.bot.doMove(this.currentState);
+                        int column = this.botMover.getMove(this.currentState);
                         System.out.println("place_disc " + column);
                     }
                     break;
@@ -77,7 +78,8 @@ public class BotParser {
 
     /**
      * Parses all the game settings given by the engine
-     * @param key Type of setting given
+     *
+     * @param key   Type of setting given
      * @param value Value
      */
     private void parseSettings(String key, String value) {
@@ -127,7 +129,8 @@ public class BotParser {
 
     /**
      * Parse data about the game given by the engine
-     * @param key Type of game data given
+     *
+     * @param key   Type of game data given
      * @param value Value
      */
     private void parseGameData(String key, String value) {

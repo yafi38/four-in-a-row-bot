@@ -9,7 +9,7 @@ import player.Player;
 
 /**
  * bot.BotState - Created on 11-5-17
- *
+ * <p>
  * Keeps track of the complete game state, such as the board
  * and game settings
  *
@@ -89,15 +89,4 @@ public class BotState {
         return this.MAX_ROUNDS;
     }
 
-    public ArrayList<Integer> getValidMoves() {
-        ArrayList<Integer> moves = new ArrayList<>();
-
-        for(int i=0; i<7; i++)
-        {
-            Point p = new Point(0, i);
-            if(board.getFieldAt(p).equals(Board.EMPTY_FIELD))
-                moves.add(i);
-        }
-        return moves;
-    }
 }
