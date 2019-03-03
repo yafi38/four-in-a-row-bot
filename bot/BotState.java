@@ -1,15 +1,16 @@
 package bot;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import field.Field;
+import board.Board;
 import player.Player;
 
 /**
  * bot.BotState - Created on 11-5-17
  *
- * Keeps track of the complete game state, such as the field
+ * Keeps track of the complete game state, such as the board
  * and game settings
  *
  * @author Jim van Eeden - jim@riddles.io
@@ -25,10 +26,10 @@ public class BotState {
     private String myName;
     private HashMap<String, Player> players;
 
-    private Field field;
+    private Board board;
 
     BotState() {
-        this.field = new Field();
+        this.board = new Board();
         this.players = new HashMap<>();
     }
 
@@ -68,8 +69,8 @@ public class BotState {
         return this.players;
     }
 
-    public Field getField() {
-        return this.field;
+    public Board getBoard() {
+        return this.board;
     }
 
     public String getMyName() {
@@ -93,7 +94,8 @@ public class BotState {
 
         for(int i=0; i<7; i++)
         {
-            if(field.isValid(i))
+            Point p = new Point(0, i);
+            if(board.getFieldAt(p).equals(board.EMPTY_FIELD))
                 moves.add(i);
         }
         return moves;

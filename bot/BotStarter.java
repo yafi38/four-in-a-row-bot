@@ -22,7 +22,7 @@ package bot;
 import java.util.ArrayList;
 import java.util.Random;
 
-import field.Field;
+import board.Board;
 
 /**
  * bot.BotStarter
@@ -40,8 +40,8 @@ public class BotStarter {
       * @return The column where the turn was made.
       */
      public int doMove(BotState state) {
-         Field field = state.getField();
-         //int move = new Random().nextInt(field.getWidth());
+         Board board = state.getBoard();
+         //int move = new Random().nextInt(board.getWidth());
 
          ArrayList<Integer> moves = state.getValidMoves();
 

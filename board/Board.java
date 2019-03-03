@@ -17,18 +17,20 @@
  *     file that was distributed with this source code.
  */
 
-package field;
+package board;
+
+import java.awt.*;
 
 /**
- * Field class
+ * Board class
  * 
- * Field class that contains the field status data and various helper functions.
+ * Board class that contains the board status data and various helper functions.
  * 
  * @author Jim van Eeden <jim@riddles.io>, Joost de Meij <joost@riddles.io>
  */
 
-public class Field {
-    private final String EMPTY_FIELD = ".";
+public class Board {
+    public final String EMPTY_FIELD = ".";
 
     private int myId;
     private int width;
@@ -36,14 +38,14 @@ public class Field {
     private String[][] field;
 
     /**
-     * Initializes and clears field
+     * Initializes and clears board
      * @throws Exception exception
      */
     public void initField() throws Exception {
         try {
             this.field = new String[this.height][this.width];
         } catch (Exception e) {
-            throw new Exception("Error: trying to initialize field while field "
+            throw new Exception("Error: trying to initialize board while board "
                     + "settings have not been parsed yet.");
         }
 
@@ -51,7 +53,7 @@ public class Field {
     }
 
 	/**
-	 * Clear the field
+	 * Clear the board
 	 */
 	public void clearField() {
         for (int i = 0; i < this.height; i++) {
@@ -62,7 +64,7 @@ public class Field {
 	}
 
     /**
-     * Parse field from comma separated String
+     * Parse board from comma separated String
      * @param s input from engine
      */
     public void parseFromString(String s) {
@@ -103,7 +105,11 @@ public class Field {
         return this.height;
     }
 
-    public boolean isValid(int i) {
-        return this.field[0][i].equals(".");
+    public String getFieldAt(Point p) {
+        return field[p.x][p.y];
+    }
+
+    public void setFieldAt(Point p, String str) {
+        field[p.x][p.y] = str;
     }
 }

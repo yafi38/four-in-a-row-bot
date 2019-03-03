@@ -21,7 +21,6 @@ package bot;
 
 import java.util.Scanner;
 
-import field.Field;
 import player.Player;
 
 /**
@@ -102,13 +101,13 @@ public class BotParser {
                     break;
                 case "your_botid":
                     int myId = Integer.parseInt(value);
-                    this.currentState.getField().setMyId(myId);
+                    this.currentState.getBoard().setMyId(myId);
                     break;
                 case "field_width":
-                    this.currentState.getField().setWidth(Integer.parseInt(value));
+                    this.currentState.getBoard().setWidth(Integer.parseInt(value));
                     break;
                 case "field_height":
-                    this.currentState.getField().setHeight(Integer.parseInt(value));
+                    this.currentState.getBoard().setHeight(Integer.parseInt(value));
                     break;
                 case "max_rounds":
                     this.currentState.setMaxRounds(Integer.parseInt(value));
@@ -135,9 +134,9 @@ public class BotParser {
                 case "round":
                     this.currentState.setRoundNumber(Integer.parseInt(value));
                     break;
-                case "field":
-                    this.currentState.getField().initField();
-                    this.currentState.getField().parseFromString(value);
+                case "board":
+                    this.currentState.getBoard().initField();
+                    this.currentState.getBoard().parseFromString(value);
                     break;
                 default:
                     System.err.println(String.format(
