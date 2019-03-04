@@ -9,34 +9,68 @@ import java.util.Random;
 
 public class BotMover {
     private int currMove;
-    private final int INF = 100000;
-    private int moveNo;
+    private final int INF = 10000000;
+    private int roundNo;
+    private int depthToSearch;
+    private long startTime;
+    private boolean timeOut;
 
     public BotMover() {
-        currMove = -1;
-        moveNo = 0;
+        roundNo = 0;
     }
 
     public int getMove(BotState state) {
+        roundNo++;
+        startTime = System.currentTimeMillis();
         Board board = state.getBoard();
+
+        int prevMove;
         currMove = -1;
+        depthToSearch = 5;
+        timeOut = false;
 
-        moveNo++;
-        calcMove(board, 0, true);
+        ArrayList<Integer> moves = board.getValidMoves();
+        int index = new Random().nextInt(moves.size());
+        prevMove = moves.get(index);
 
-        if (currMove == -1) {
-            System.err.println("RANDOM: " + moveNo);
-            ArrayList<Integer> moves = board.getValidMoves();
-            int index = new Random().nextInt(moves.size());
-            currMove = moves.get(index);
+
+        while (depthToSearch < 20) {
+            int finalScore = calcMove(state, 0, true);
+            if (finalScore == INF) {
+                System.err.println("Winning move " + currMove + " found at round: " + roundNo);
+                break;
+            }
+
+            if (timeOut) {
+                currMove = prevMove;
+                System.err.println("Round: " + roundNo + " Timed Out");
+                depthToSearch--;
+                break;
+            } else if (currMove == -1) {
+                //currMove = prevMove;
+                System.err.println("Depth: " + depthToSearch + " No good move found");
+            } else {
+                prevMove = currMove;
+                currMove = -1;
+                System.err.println("Round: " + roundNo + " Set prev to: " + prevMove + " Depth: " + depthToSearch + " Final score: " + finalScore);
+            }
+            depthToSearch++;
         }
-
+        //long timeTaken = System.currentTimeMillis() - startTime;
+        //System.err.println("Time: " + timeTaken + " Depth: " + depthToSearch);
+        if(currMove == -1) currMove = prevMove;
         return currMove;
     }
 
-    private int calcMove(Board board, int depth, boolean isMe) {
-        if (depth >= 6) {
+    private int calcMove(BotState state, int depth, boolean isMe) {
+        Board board = state.getBoard();
+        if (depth >= depthToSearch) {
             return getScore(board);
+        }
+
+        if (System.currentTimeMillis() - startTime > state.getTimePerMove()) {
+            timeOut = true;
+            return -INF;
         }
 
         ArrayList<Integer> moves = board.getValidMoves();
@@ -48,7 +82,7 @@ public class BotMover {
             for (int move : moves) {
                 Logic.doMove(board, move, board.getMyId());
                 if (Logic.isWinning(board, 4, board.getMyId())) {
-                    currMove = move;
+                    if (depth == 0) currMove = move;
                     Logic.undoMove(board, move);
                     return INF;
                 }
@@ -58,11 +92,12 @@ public class BotMover {
             for (int move : moves) {
                 Logic.doMove(board, move, board.getMyId());
 
-                int tempScore = calcMove(board, depth + 1, false);
+                int tempScore = calcMove(state, depth + 1, false);
+
 
                 if (tempScore > score) {
                     score = tempScore;
-                    if(depth == 0) currMove = move;
+                    if (depth == 0) currMove = move;
                 }
                 Logic.undoMove(board, move);
             }
@@ -82,7 +117,7 @@ public class BotMover {
 
             for (int move : moves) {
                 Logic.doMove(board, move, board.getEnemyId());
-                int tempScore = calcMove(board, depth + 1, true);
+                int tempScore = calcMove(state, depth + 1, true);
                 if (tempScore < score)
                     score = tempScore;
                 Logic.undoMove(board, move);
@@ -93,7 +128,6 @@ public class BotMover {
     }
 
     private int getScore(Board board) {
-        //System.currentTimeMillis();
         int myId = board.getMyId();
         int enemyId = board.getEnemyId();
         if (Logic.isWinning(board, 4, myId))
@@ -121,7 +155,7 @@ public class BotMover {
                             break;
                     }
                     x--;
-                    score += (multiplier * x * x * x * x);
+                    score += (multiplier * x * x * x);
 
 
                     //horizontal
@@ -132,7 +166,7 @@ public class BotMover {
                             break;
                     }
                     x--;
-                    score += (multiplier * x * x * x * x);
+                    score += (multiplier * x * x * x);
 
                     //diagonal
                     x = 0;
@@ -142,7 +176,7 @@ public class BotMover {
                             break;
                     }
                     x--;
-                    score += (multiplier * x * x * x * x);
+                    score += (multiplier * x * x * x);
 
                     //anti diagonal
                     x = 0;
@@ -152,7 +186,7 @@ public class BotMover {
                             break;
                     }
                     x--;
-                    score += (multiplier * x * x * x * x);
+                    score += (multiplier * x * x * x);
                 }
             }
         }
