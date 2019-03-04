@@ -10,14 +10,22 @@ import java.util.Random;
 public class BotMover {
     private int currMove;
     private final int INF = 100000;
+    private int moveNo;
+
+    public BotMover() {
+        currMove = -1;
+        moveNo = 0;
+    }
 
     public int getMove(BotState state) {
         Board board = state.getBoard();
         currMove = -1;
 
+        moveNo++;
         calcMove(board, 0, true);
 
         if (currMove == -1) {
+            System.err.println("RANDOM: " + moveNo);
             ArrayList<Integer> moves = board.getValidMoves();
             int index = new Random().nextInt(moves.size());
             currMove = moves.get(index);
@@ -31,46 +39,50 @@ public class BotMover {
             return getScore(board);
         }
 
-        int score = 0;
-
         ArrayList<Integer> moves = board.getValidMoves();
 
         if (isMe) {
+            int score = -INF;
+
+            //pre-checking if winning move is available
             for (int move : moves) {
                 Logic.doMove(board, move, board.getMyId());
-                //board.printBoard();
-                //System.err.println();
-
                 if (Logic.isWinning(board, 4, board.getMyId())) {
                     currMove = move;
-                    //System.err.println("We are winning\n");
                     Logic.undoMove(board, move);
                     return INF;
                 }
+                Logic.undoMove(board, move);
+            }
+
+            for (int move : moves) {
+                Logic.doMove(board, move, board.getMyId());
 
                 int tempScore = calcMove(board, depth + 1, false);
-                //System.err.println("Me Score: " + tempScore + "\n");
+
                 if (tempScore > score) {
                     score = tempScore;
-                    currMove = move;
+                    if(depth == 0) currMove = move;
                 }
                 Logic.undoMove(board, move);
             }
             return score;
         } else {
+            int score = INF;
+
+            //pre-checking if winning move is available
             for (int move : moves) {
                 Logic.doMove(board, move, board.getEnemyId());
-                //board.printBoard();
-                //System.err.println();
-
                 if (Logic.isWinning(board, 4, board.getEnemyId())) {
-                    //System.err.println("Enemy winning\n");
                     Logic.undoMove(board, move);
                     return -INF;
                 }
+                Logic.undoMove(board, move);
+            }
 
+            for (int move : moves) {
+                Logic.doMove(board, move, board.getEnemyId());
                 int tempScore = calcMove(board, depth + 1, true);
-                //System.err.println("En Score: " + tempScore + "\n");
                 if (tempScore < score)
                     score = tempScore;
                 Logic.undoMove(board, move);

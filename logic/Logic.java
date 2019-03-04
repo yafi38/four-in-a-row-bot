@@ -30,6 +30,8 @@ public class Logic {
                     return;
                 }
             }
+        } else {
+            System.err.println("Invalid Move");
         }
     }
 
