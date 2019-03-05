@@ -150,4 +150,8 @@ public class Board {
             System.err.println();
         }
     }
+
+    public boolean isEmpty(int i, int j) {
+        return field[i][j].equals(EMPTY_FIELD);
+    }
 }

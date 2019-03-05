@@ -58,14 +58,15 @@ public class BotMover {
         }
         //long timeTaken = System.currentTimeMillis() - startTime;
         //System.err.println("Time: " + timeTaken + " Depth: " + depthToSearch);
-        if(currMove == -1) currMove = prevMove;
+        if (currMove == -1) currMove = prevMove;
         return currMove;
     }
 
     private int calcMove(BotState state, int depth, boolean isMe, int alpha, int beta) {
         Board board = state.getBoard();
+
         if (depth >= depthToSearch) {
-            return getScore(board);
+            return getBetterScore(board);
         }
 
         if (System.currentTimeMillis() - startTime > state.getTimePerMove() + state.getExtraTime()) {
@@ -100,10 +101,10 @@ public class BotMover {
                     if (depth == 0) currMove = move;
                 }
 
-                if(tempScore > alpha)
+                if (tempScore > alpha)
                     alpha = tempScore;
 
-                if(alpha >= beta)
+                if (alpha >= beta)
                     break;
             }
             return score;
@@ -129,10 +130,10 @@ public class BotMover {
                 if (tempScore < score)
                     score = tempScore;
 
-                if(tempScore < beta)
+                if (tempScore < beta)
                     beta = tempScore;
 
-                if(alpha >= beta)
+                if (alpha >= beta)
                     break;
             }
             return score;
@@ -206,4 +207,86 @@ public class BotMover {
 
         return score;
     }
+
+    private int getBetterScore(Board board) {
+        int myId = board.getMyId();
+        int enemyId = board.getEnemyId();
+
+        if (Logic.isWinning(board, 4, myId)) {
+            System.err.println("Kaje Lagse");
+            return INF;
+        } else if (Logic.isWinning(board, 4, enemyId)) {
+            System.err.println("Kaje Lagese");
+            return -INF;
+        }
+
+        int score = 0;
+
+        for (int i = 0; i < board.getHeight(); i++) {
+            for (int j = 0; j < board.getWidth(); j++) {
+                String c = board.getFieldAt(new Point(i, j));
+
+                if (!c.equals(Board.EMPTY_FIELD)) {
+                    int multiplier = 1;
+
+                    if (c.equals(String.valueOf(enemyId)))
+                        multiplier = -1;
+
+                    //vertical
+                    int x = 0;
+                    while (c.equals(board.getFieldAt(new Point(i + x, j)))) {
+                        x++;
+                        if (!(x + i < board.getHeight()))
+                            break;
+                    }
+                    x--;
+                    //if there is no empty space in either side, there is no point of it
+                    if ((i != 0 && board.isEmpty(i - 1, j)))
+                        score += (multiplier * x * x * x * x);
+
+
+                    //horizontal
+                    x = 0;
+                    while (c.equals(board.getFieldAt(new Point(i, j + x)))) {
+                        x++;
+                        if (!(x + j < board.getWidth()))
+                            break;
+                    }
+                    x--;
+                    if ((j != 0 && board.isEmpty(i, j - 1)) ||
+                            (j != board.getWidth() - 1 && board.isEmpty(i, j + 1)))
+                        score += (multiplier * x * x * x * x);
+
+                    //diagonal
+                    x = 0;
+                    while (c.equals(board.getFieldAt(new Point(i + x, j + x)))) {
+                        x++;
+                        if (!(x + i < board.getHeight() && x + j < board.getWidth()))
+                            break;
+                    }
+                    x--;
+
+                    if ((i != 0 && j != 0 && board.isEmpty(i - 1, j - 1)) ||
+                            (i != board.getHeight() - 1 && j != board.getWidth() - 1 && board.isEmpty(i + 1, j + 1)))
+                        score += (multiplier * x * x * x * x);
+
+                    //anti diagonal
+                    x = 0;
+                    while (c.equals(board.getFieldAt(new Point(i + x, j - x)))) {
+                        x++;
+                        if (!(x + i < board.getHeight() && j - x >= 0))
+                            break;
+                    }
+                    x--;
+                    if ((i != board.getHeight() - 1 && j != 0 && board.isEmpty(i + 1, j - 1)) ||
+                            (i != 0 && j != board.getWidth() - 1 && board.isEmpty(i - 1, j + 1)))
+                        score += (multiplier * x * x * x * x);
+                }
+            }
+        }
+
+        return score;
+    }
+
+
 }
