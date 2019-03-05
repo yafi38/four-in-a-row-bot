@@ -20,6 +20,7 @@ public class BotState {
     private int MAX_TIMEBANK;
     private int TIME_PER_MOVE;
     private int MAX_ROUNDS;
+    private int EXTRA_TIME;
 
     private int roundNumber;
     private int timebank;
@@ -39,6 +40,7 @@ public class BotState {
 
     public void setMaxTimebank(int value) {
         this.MAX_TIMEBANK = value;
+        this.EXTRA_TIME = this.MAX_TIMEBANK / 15;
     }
 
     public void setTimePerMove(int value) {
@@ -64,6 +66,7 @@ public class BotState {
     public int getRoundNumber() {
         return this.roundNumber;
     }
+    public int getExtraTime() { return this.EXTRA_TIME; }
 
     public HashMap<String, Player> getPlayers() {
         return this.players;

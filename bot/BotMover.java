@@ -35,7 +35,7 @@ public class BotMover {
 
 
         while (depthToSearch < 20) {
-            int finalScore = calcMove(state, 0, true);
+            int finalScore = calcMove(state, 0, true, -INF, INF);
             if (finalScore == INF) {
                 System.err.println("Winning move " + currMove + " found at round: " + roundNo);
                 break;
@@ -62,13 +62,13 @@ public class BotMover {
         return currMove;
     }
 
-    private int calcMove(BotState state, int depth, boolean isMe) {
+    private int calcMove(BotState state, int depth, boolean isMe, int alpha, int beta) {
         Board board = state.getBoard();
         if (depth >= depthToSearch) {
             return getScore(board);
         }
 
-        if (System.currentTimeMillis() - startTime > state.getTimePerMove()) {
+        if (System.currentTimeMillis() - startTime > state.getTimePerMove() + state.getExtraTime()) {
             timeOut = true;
             return -INF;
         }
@@ -92,14 +92,19 @@ public class BotMover {
             for (int move : moves) {
                 Logic.doMove(board, move, board.getMyId());
 
-                int tempScore = calcMove(state, depth + 1, false);
-
+                int tempScore = calcMove(state, depth + 1, false, alpha, beta);
+                Logic.undoMove(board, move);
 
                 if (tempScore > score) {
                     score = tempScore;
                     if (depth == 0) currMove = move;
                 }
-                Logic.undoMove(board, move);
+
+                if(tempScore > alpha)
+                    alpha = tempScore;
+
+                if(alpha >= beta)
+                    break;
             }
             return score;
         } else {
@@ -117,10 +122,18 @@ public class BotMover {
 
             for (int move : moves) {
                 Logic.doMove(board, move, board.getEnemyId());
-                int tempScore = calcMove(state, depth + 1, true);
+
+                int tempScore = calcMove(state, depth + 1, true, alpha, beta);
+                Logic.undoMove(board, move);
+
                 if (tempScore < score)
                     score = tempScore;
-                Logic.undoMove(board, move);
+
+                if(tempScore < beta)
+                    beta = tempScore;
+
+                if(alpha >= beta)
+                    break;
             }
             return score;
         }
