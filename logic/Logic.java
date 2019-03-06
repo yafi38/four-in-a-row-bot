@@ -35,79 +35,49 @@ public class Logic {
         }
     }
 
-    public static boolean isWinning(Board b, int inARow, int pId) {
-        String pIdStr = String.valueOf(pId);
+    public static boolean isWinning(Board board, int inARow, int pId) {
+        String c = String.valueOf(pId);
 
-        /* Check for horizontal wins */
-        for (int i = 0; i < b.getHeight(); i++) {
-            for (int j = 0; j < b.getWidth() - inARow + 1; j++) {
-                boolean win = true;
-                for (int x = 0; x < inARow; x++) {
-                    if (!pIdStr.equals(b.getFieldAt(new Point(i, j + x)))) {
-                        win = false;
-                        break;
+        for (int i = 0; i < board.getHeight(); i++) {
+            for (int j = 0; j < board.getWidth(); j++) {
+                if (c.equals(board.getFieldAt(new Point(i, j)))) {
+                    //vertical
+                    int x = 0;
+                    while (x < inARow && c.equals(board.getFieldAt(new Point(i + x, j)))) {
+                        x++;
+                        if (!(i + x < board.getHeight()))
+                            break;
                     }
-                }
-                if (win) {
-                    //System.err.println("Horizontal");
-                    return true;
+                    if (x == inARow) return true;
+
+                    //horizontal
+                    x = 0;
+                    while (x < inARow && c.equals(board.getFieldAt(new Point(i, j + x)))) {
+                        x++;
+                        if (!(j + x < board.getWidth()))
+                            break;
+                    }
+                    if (x == inARow) return true;
+
+                    //diagonal
+                    x = 0;
+                    while (x < inARow && c.equals(board.getFieldAt(new Point(i + x, j + x)))) {
+                        x++;
+                        if (!(i + x < board.getHeight() && j + x < board.getWidth()))
+                            break;
+                    }
+                    if (x == inARow) return true;
+
+                    x = 0;
+                    while (x < inARow && c.equals(board.getFieldAt(new Point(i + x, j - x)))) {
+                        x++;
+                        if (!(i + x < board.getHeight() && j - x >= 0))
+                            break;
+                    }
+                    if(x == inARow) return true;
                 }
             }
         }
-
-
-        /* Check for vertical wins */
-        for (int i = 0; i < b.getHeight() - inARow + 1; i++) {
-            for (int j = 0; j < b.getWidth(); j++) {
-                boolean win = true;
-                for (int x = 0; x < inARow; x++) {
-                    if (!pIdStr.equals(b.getFieldAt(new Point(i + x, j)))) {
-                        win = false;
-                        break;
-                    }
-                }
-                if (win) {
-                    //System.err.println("Vertical");
-                    return true;
-                }
-            }
-        }
-
-
-        /* Check for diagonal wins */
-        for (int i = 0; i < b.getHeight() - inARow + 1; i++) {
-            for (int j = 0; j < b.getWidth() - inARow + 1; j++) {
-                boolean win = true;
-                for (int x = 0; x < inARow; x++) {
-                    if (!pIdStr.equals(b.getFieldAt(new Point(i + x, j + x)))) {
-                        win = false;
-                        break;
-                    }
-                }
-                if (win) {
-                    //System.err.println("Diagonal");
-                    return true;
-                }
-            }
-        }
-
-        /* Check for anti diagonal wins */
-        for (int i = b.getHeight() - 1; i >= inARow - 1; i--) {
-            for (int j = 0; j < b.getWidth() - inARow + 1; j++) {
-                boolean win = true;
-                for (int x = 0; x < inARow; x++) {
-                    if (!pIdStr.equals(b.getFieldAt(new Point(i - x, j + x)))) {
-                        win = false;
-                        break;
-                    }
-                }
-                if (win) {
-                    //System.err.println("Anti Diagonal");
-                    return true;
-                }
-            }
-        }
-
         return false;
     }
 }
