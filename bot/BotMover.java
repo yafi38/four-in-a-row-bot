@@ -20,13 +20,16 @@ public class BotMover {
     }
 
     public int getMove(BotState state) {
-        roundNo++;
         startTime = System.currentTimeMillis();
+        roundNo++;
         Board board = state.getBoard();
+
+        if(roundNo == 1 && board.getMyId() == 0)
+            return board.getWidth()/2 + 1;
 
         int prevMove;
         currMove = -1;
-        depthToSearch = 5;
+        depthToSearch = 1;
         timeOut = false;
 
         ArrayList<Integer> moves = board.getValidMoves();
@@ -46,9 +49,10 @@ public class BotMover {
                 System.err.println("Round: " + roundNo + " Timed Out");
                 depthToSearch--;
                 break;
-            } else if (currMove == -1) {
+            } else if (currMove == -1 && finalScore == -INF) {
                 //currMove = prevMove;
-                System.err.println("Depth: " + depthToSearch + " No good move found");
+                System.err.println("Round: " + roundNo +" Depth: " + depthToSearch + " No good move found");
+                break;
             } else {
                 prevMove = currMove;
                 currMove = -1;
@@ -232,6 +236,8 @@ public class BotMover {
                     if (c.equals(String.valueOf(enemyId)))
                         multiplier = -1;
 
+                    int gap;
+
                     //vertical
                     int x = 0;
                     while (c.equals(board.getFieldAt(new Point(i + x, j)))) {
@@ -240,52 +246,88 @@ public class BotMover {
                             break;
                     }
                     x--;
-                    //if there is no empty space in either side, there is no point of it
+                    //if there is no empty space on top, there is no use of it
                     if ((i != 0 && board.isEmpty(i - 1, j)))
-                        score += (multiplier * x * x * x * x);
+                        score += (multiplier * x * x * x);
 
 
                     //horizontal
                     x = 0;
-                    while (c.equals(board.getFieldAt(new Point(i, j + x)))) {
+                    gap = 0;
+                    while (true) {
+                        Point p = new Point(i, j + x);
                         x++;
+
+                        if (!c.equals(board.getFieldAt(p))) {
+                            if (board.isEmpty(p.x, p.y)) {
+                                if (gap == 1) break;
+                                gap++;
+                            } else break;
+                        }
+
                         if (!(x + j < board.getWidth()))
                             break;
                     }
                     x--;
-                    if ((j != 0 && board.isEmpty(i, j - 1)) ||
-                            (j != board.getWidth() - 1 && board.isEmpty(i, j + 1)))
-                        score += (multiplier * x * x * x * x);
+                    if (gap == 1) x--;
+
+                    if ((j != 0 && board.isEmpty(i, j - 1)) || gap == 1)
+                        score += calcScore(x, multiplier);
+
 
                     //diagonal
                     x = 0;
-                    while (c.equals(board.getFieldAt(new Point(i + x, j + x)))) {
+                    gap = 0;
+                    while (true) {
+                        Point p = new Point(i + x, j + x);
                         x++;
+                        if (!c.equals(board.getFieldAt(p))) {
+                            if (board.isEmpty(p.x, p.y)) {
+                                if (gap == 1) break;
+                                gap++;
+                            } else break;
+                        }
+
                         if (!(x + i < board.getHeight() && x + j < board.getWidth()))
                             break;
                     }
                     x--;
+                    if (gap == 1) x--;
 
-                    if ((i != 0 && j != 0 && board.isEmpty(i - 1, j - 1)) ||
-                            (i != board.getHeight() - 1 && j != board.getWidth() - 1 && board.isEmpty(i + 1, j + 1)))
-                        score += (multiplier * x * x * x * x);
+                    if ((i != 0 && j != 0 && board.isEmpty(i - 1, j - 1)) || gap == 1)
+                        score += calcScore(x, multiplier);
 
                     //anti diagonal
                     x = 0;
-                    while (c.equals(board.getFieldAt(new Point(i + x, j - x)))) {
+                    gap = 0;
+                    while (true) {
+                        Point p = new Point(i + x, j - x);
                         x++;
+                        if (!c.equals(board.getFieldAt(p))) {
+                            if (board.isEmpty(p.x, p.y)) {
+                                if (gap == 1) break;
+                                gap++;
+                            } else break;
+                        }
+
                         if (!(x + i < board.getHeight() && j - x >= 0))
                             break;
                     }
                     x--;
-                    if ((i != board.getHeight() - 1 && j != 0 && board.isEmpty(i + 1, j - 1)) ||
-                            (i != 0 && j != board.getWidth() - 1 && board.isEmpty(i - 1, j + 1)))
-                        score += (multiplier * x * x * x * x);
+                    if (gap == 1) x--;
+
+                    if ((i != 0 && j != board.getWidth() - 1 && board.isEmpty(i - 1, j + 1)) || gap == 1)
+                        score += calcScore(x, multiplier);
                 }
             }
         }
 
         return score;
+    }
+
+    private int calcScore(int x, int multiplier) {
+        if (x > 2) x = 2;
+        return (multiplier * x * x * x);
     }
 
 
