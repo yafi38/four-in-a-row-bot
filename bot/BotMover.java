@@ -24,8 +24,8 @@ public class BotMover {
         roundNo++;
         Board board = state.getBoard();
 
-        if(roundNo == 1 && board.getMyId() == 0)
-            return board.getWidth()/2 + 1;
+        if (roundNo == 1 && board.getMyId() == 0)
+            return board.getWidth() / 2;
 
         int prevMove;
         currMove = -1;
@@ -51,7 +51,7 @@ public class BotMover {
                 break;
             } else if (currMove == -1 && finalScore == -INF) {
                 //currMove = prevMove;
-                System.err.println("Round: " + roundNo +" Depth: " + depthToSearch + " No good move found");
+                System.err.println("Round: " + roundNo + " Depth: " + depthToSearch + " No good move found");
                 break;
             } else {
                 prevMove = currMove;
@@ -60,8 +60,7 @@ public class BotMover {
             }
             depthToSearch++;
         }
-        //long timeTaken = System.currentTimeMillis() - startTime;
-        //System.err.println("Time: " + timeTaken + " Depth: " + depthToSearch);
+
         if (currMove == -1) currMove = prevMove;
         return currMove;
     }
@@ -80,7 +79,7 @@ public class BotMover {
 
         ArrayList<Integer> moves = board.getValidMoves();
 
-        if (isMe) {
+        if (isMe) { //maximizer
             int score = -INF;
 
             //pre-checking if winning move is available
@@ -112,7 +111,7 @@ public class BotMover {
                     break;
             }
             return score;
-        } else {
+        } else { //minimizer
             int score = INF;
 
             //pre-checking if winning move is available
@@ -145,84 +144,8 @@ public class BotMover {
 
     }
 
-    private int getScore(Board board) {
-        int myId = board.getMyId();
-        int enemyId = board.getEnemyId();
-        if (Logic.isWinning(board, 4, myId))
-            return INF;
-        else if (Logic.isWinning(board, 4, enemyId))
-            return -INF;
-
-        int score = 0;
-
-        for (int i = 0; i < board.getHeight(); i++) {
-            for (int j = 0; j < board.getWidth(); j++) {
-                String c = board.getFieldAt(new Point(i, j));
-
-                if (!c.equals(Board.EMPTY_FIELD)) {
-                    int multiplier = 1;
-
-                    if (c.equals(String.valueOf(enemyId)))
-                        multiplier = -1;
-
-                    //vertical
-                    int x = 0;
-                    while (c.equals(board.getFieldAt(new Point(i + x, j)))) {
-                        x++;
-                        if (!(x + i < board.getHeight()))
-                            break;
-                    }
-                    x--;
-                    score += (multiplier * x * x * x);
-
-
-                    //horizontal
-                    x = 0;
-                    while (c.equals(board.getFieldAt(new Point(i, j + x)))) {
-                        x++;
-                        if (!(x + j < board.getWidth()))
-                            break;
-                    }
-                    x--;
-                    score += (multiplier * x * x * x);
-
-                    //diagonal
-                    x = 0;
-                    while (c.equals(board.getFieldAt(new Point(i + x, j + x)))) {
-                        x++;
-                        if (!(x + i < board.getHeight() && x + j < board.getWidth()))
-                            break;
-                    }
-                    x--;
-                    score += (multiplier * x * x * x);
-
-                    //anti diagonal
-                    x = 0;
-                    while (c.equals(board.getFieldAt(new Point(i + x, j - x)))) {
-                        x++;
-                        if (!(x + i < board.getHeight() && j - x >= 0))
-                            break;
-                    }
-                    x--;
-                    score += (multiplier * x * x * x);
-                }
-            }
-        }
-
-        return score;
-    }
-
     private int getBetterScore(Board board) {
-        int myId = board.getMyId();
         int enemyId = board.getEnemyId();
-
-        if (Logic.isWinning(board, 4, myId)) {
-            System.err.println("Kaje Lagse");
-            return INF;
-        } else if (Logic.isWinning(board, 4, enemyId)) {
-            System.err.println("Kaje Lagese");
-            return -INF;
-        }
 
         int score = 0;
 
@@ -329,6 +252,5 @@ public class BotMover {
         if (x > 2) x = 2;
         return (multiplier * x * x * x);
     }
-
 
 }
